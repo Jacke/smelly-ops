@@ -1,8 +1,7 @@
-import mill._
-import mill.scalalib._
 import $ivy.`com.goyeau::mill-scalafix:0.1.1`
 import com.goyeau.mill.scalafix.ScalafixModule
-import mill.scalalib._
+import mill._, scalalib._, publish._
+import coursier.maven.MavenRepository
 
 object Version {
   val scalaVersion = "2.13.2"
@@ -37,11 +36,27 @@ object Libs {
 
 }
 
-trait SmellyOpsModule extends ScalaModule {
+trait SmellyOpsModule extends ScalaModule with PublishModule {
   def forkArgs = Seq("-Xmx4g")
   def javacOptions = Seq("-Xmx4000m -Xms6000m")
   val scalaVersion = Version.scalaVersion
   def scalacOptions = T { super.scalacOptions().filterNot(Set("-Yno-imports")) ++ defaultScalaOpts }
+  def publishVersion = "0.0.10"
+
+  def repositories = super.repositories ++ Seq(
+    MavenRepository("https://oss.sonatype.org/content/repositories/releases")
+  )
+
+  def pomSettings = PomSettings(
+    description = "Cats IO and ZIO bi-conversions",
+    organization = "com.github.jacke",
+    url = "https://github.com/jacke/smelly-ops",
+    licenses = Seq(License.MIT),
+    versionControl = VersionControl.github("jacke", "smelly-ops"),
+    developers = Seq(
+      Developer("jacke", "Stan Sobolev","https://github.com/Jacke")
+    )
+  )
 
   val defaultScalaOpts = Seq(
     "-deprecation", // Emit warning and location for usages of deprecated APIs.
@@ -91,8 +106,6 @@ trait SmellyOpsModuleWithTests extends SmellyOpsModule {
     )
   }
 }
-
-import coursier.maven.MavenRepository
 
 object smelly extends SmellyOpsModuleWithTests with ScalafixModule {
   def repositories = super.repositories ++ Seq(

@@ -13,3 +13,12 @@ where Env could be ZEnv, Any, ...
   // convert IO to ZIO[Zenv] to IO to ZIO[Any] to IO and run in
   CIOE.toZIO[ZEnv].toCatsEffect.toZIO[Any].toCatsEffect.unsafeRunSync shouldBe 100
 ```
+
+
+## Install
+
+```scala
+    libraryDependencies ++= Seq(
+      "com.github.jacke" %% "smelly" %  "0.0.10",
+    )
+```
